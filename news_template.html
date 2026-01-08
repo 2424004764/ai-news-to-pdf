@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        /* 这里是你的CSS样式，会由WeasyPrint处理 */
+        body { font-family: "SimSun", serif; margin: 0.5cm; } /* 默认边距 */
+        .page-break { page-break-before: always; } /* 强制分页 */
+
+        /* 打印专用样式 */
+        @page {
+            size: A4; /* 纸张大小 */
+            margin: 0.5cm 0.5cm 0.5cm 0.5cm; /* 默认边距 */
+            /* 奇偶页的特殊设置，用于装订 */
+            @left-page {
+                margin-left: 3.5cm; /* 左侧页码（偶数页）装订线 */
+            }
+            @right-page {
+                margin-right: 3.5cm; /* 右侧页码（奇数页）装订线 */
+            }
+
+            /* 页眉页脚 */
+            @top-center { content: "{{ doc_title }}"; }
+            @bottom-center { content: counter(page); } /* 自动页码 */
+        }
+
+        h1, h2 { color: #333; }
+        .news-item { margin-bottom: 2em; border-bottom: 1px solid #eee; padding-bottom: 1em; }
+        .news-item img { max-width: 100%; height: auto; display: block; margin: 1em 0; }
+        .news-meta { font-size: 0.9em; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>{{ doc_title }}</h1>
+    <p>整理日期: {{ current_date }}</p>
+
+    {% for news in all_news %}
+        <div class="news-item">
+            <h2>{{ news.title }}</h2>
+            <p class="news-meta">发布日期: {{ news.date }} {#| 作者: {{ news.author }}#}</p>
+            {# {% if news.image_url %}
+                <img src="{{ news.image_url }}" alt="{{ news.title }}">
+            {% endif %} #}
+            <p>{{ news.content }}</p>
+        </div>
+        {# 如果需要每个新闻单独一页，可以添加强制分页 #}
+        {% if not loop.last %}
+            {% endif %}
+    {% endfor %}
+</body>
+</html>
