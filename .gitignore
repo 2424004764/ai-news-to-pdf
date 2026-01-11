@@ -2,3 +2,5 @@ AI_News_Digest.pdf
 .idea/
 agent/__pycache__/
 config/__pycache__/
+spi/__pycache__/
+utils/__pycache__/

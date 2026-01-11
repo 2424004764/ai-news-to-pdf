@@ -2,7 +2,6 @@ import json
 
 from jinja2 import Environment, FileSystemLoader
 import datetime
-from weasyprint import HTML
 from agent.news import get_news_agent
 from agno.agent import Message
 
@@ -25,14 +24,11 @@ def get_news():
     total_num = 2
     agent = get_news_agent()
     result = agent.run(
-        input=[Message(role='user', content=f"请给我提供 {user_date} 的新闻内容，每天获取{day_news_num}条新闻，总共只要{total_num}条新闻即可")], stream=False)
+        input=[Message(role='user',
+                       content=f"请给我提供 {user_date} 的新闻内容，每天获取{day_news_num}条新闻，总共只要{total_num}条新闻即可")],
+        stream=False)
     return json.loads(result.content)
 
-
-news_data = get_news()
-
-# 渲染 HTML
-generated_html = render_html(news_data, doc_title="每日AI新闻简报")
 
 # 保存为 HTML 文件进行预览
 # with open("output_news.html", "w", encoding="utf-8") as f:
@@ -41,6 +37,8 @@ generated_html = render_html(news_data, doc_title="每日AI新闻简报")
 
 
 def convert_html_to_pdf(html_content, output_pdf_path):
+    from weasyprint import HTML
+
     # 可以将CSS直接嵌入HTML，也可以单独加载CSS文件
     # html_doc = HTML(string=html_content, base_url=os.getcwd()) # base_url 用于解析图片等相对路径
 
@@ -55,5 +53,24 @@ def convert_html_to_pdf(html_content, output_pdf_path):
     html_doc.write_pdf(output_pdf_path)
     print(f"PDF 文件已生成：{output_pdf_path}")
 
-# 执行转换
-convert_html_to_pdf(generated_html, "AI_News.pdf")
+
+def main():
+    news_source = "api"  # model：大模型 api：api接口
+    news_data = []
+    if news_source == "model":
+        news_data = get_news()
+    elif news_source == "api":
+        from spi.bochaai import BoChaAiApi
+
+        news_api = BoChaAiApi()
+        news_data = news_api.get_news("2022-05", "的中文新闻", 5)
+
+    # print(news_data)
+    # return
+    print("开始生成pdf")
+    generated_html = render_html(news_data, doc_title="每日AI新闻简报")
+    convert_html_to_pdf(generated_html, "AI_News.pdf")
+
+
+if __name__ == '__main__':
+    main()
