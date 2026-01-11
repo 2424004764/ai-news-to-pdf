@@ -71,8 +71,7 @@ def main():
     if len(news_data) == 0:
         print("没有找到新闻，不生成pdf")
         return
-    # print(news_data)
-    # return
+
     print("开始生成pdf")
     generated_html = render_html(news_data, doc_title="每日AI新闻简报")
     convert_html_to_pdf(generated_html, "AI_News.pdf")
