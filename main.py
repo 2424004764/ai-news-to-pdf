@@ -4,6 +4,7 @@ from jinja2 import Environment, FileSystemLoader
 import datetime
 from agent.news import get_news_agent
 from agno.agent import Message
+from dotenv import load_dotenv
 
 
 def render_html(all_news, doc_title="新闻汇编", template_path='.'):
@@ -55,6 +56,7 @@ def convert_html_to_pdf(html_content, output_pdf_path):
 
 
 def main():
+    load_dotenv()
     news_source = "api"  # model：大模型 api：api接口
     news_data = []
     if news_source == "model":
@@ -63,7 +65,7 @@ def main():
         from spi.bochaai import BoChaAiApi
 
         news_api = BoChaAiApi()
-        news_data = news_api.get_news("2022-05", "的中文新闻", 5)
+        news_data = news_api.get_news(["2022-05", "2022-06"], "的中文新闻", 5)
 
     # print(news_data)
     # return

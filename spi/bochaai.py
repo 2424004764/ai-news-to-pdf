@@ -2,11 +2,12 @@ import requests
 import socket
 from utils.date import convert_iso_to_datetime_str, get_days_in_month
 import re
+import os
 
 
 class BoChaAiApi:
     def __init__(self):
-        self.api_key = ""
+        self.api_key = os.getenv("BoChaAiApiKey")
         self.base_url = "https://api.bocha.cn/v1"
 
     socket.setdefaulttimeout(10)
@@ -76,16 +77,23 @@ class BoChaAiApi:
         return news_data
 
     def get_news(self, ym, incidental, day_count):
-        days = get_days_in_month(ym)
+        if isinstance(ym, str):
+            months = [ym]
+        elif isinstance(ym, list):
+            months = ym
+        else:
+            raise ValueError("ym参数必须是字符串或列表")
 
         news_data = []
-        for idx, day in enumerate(days):
-            date = ym + "-" + str(day)
-            query = "{} {}".format(date, incidental)
-            freshness = "{}..{}".format(ym + "-" + str(day), ym + "-" + str(day))
-            data = self.get_news_by_date(query, freshness, day_count)
-            news_data.extend(data)
-            print(f"第{idx+1}次调用，日期：{date}， freshness：{freshness}，获取的新闻条数：{len(data)}")
+        for month_idx, month in enumerate(months):
+            days = get_days_in_month(month)
+            for idx, day in enumerate(days):
+                date = month + "-" + str(day)
+                query = "{} {}".format(date, incidental)
+                freshness = "{}..{}".format(month + "-" + str(day), month + "-" + str(day))
+                data = self.get_news_by_date(query, freshness, day_count)
+                news_data.extend(data)
+                print(f"第{month_idx+1}个月份：{month}，第{idx+1}次调用，日期：{date}， freshness：{freshness}，获取的新闻条数：{len(data)}")
 
-        print(f"{ym}调用完成，共获取新闻条数：{len(news_data)}")
+        print(f"所有月份调用完成，共获取新闻条数：{len(news_data)}")
         return sorted(news_data, key=lambda x: x['date'])

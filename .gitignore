@@ -4,3 +4,5 @@ agent/__pycache__/
 config/__pycache__/
 spi/__pycache__/
 utils/__pycache__/
+.env
+AI_News.pdf
