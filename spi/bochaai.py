@@ -77,6 +77,16 @@ class BoChaAiApi:
         return news_data
 
     def get_news(self, ym, incidental, day_count):
+        """
+        按月获取新闻
+        Args:
+            ym: 如：["2022-05", "2022-06"]
+            incidental:  的中文新闻
+            day_count: 5
+
+        Returns:
+
+        """
         if isinstance(ym, str):
             months = [ym]
         elif isinstance(ym, list):
@@ -96,4 +106,31 @@ class BoChaAiApi:
                 print(f"第{month_idx+1}个月份：{month}，第{idx+1}次调用，日期：{date}， freshness：{freshness}，获取的新闻条数：{len(data)}")
 
         print(f"所有月份调用完成，共获取新闻条数：{len(news_data)}")
+        return sorted(news_data, key=lambda x: x['date'])
+
+    def get_news_by_dates(self, dates, incidental, day_count):
+        """
+        按天获取新闻
+        Args:
+            dates: 如：["2022-05-01"]
+            incidental:  的中文新闻
+            day_count: 5
+
+        Returns:
+
+        """
+        if isinstance(dates, str):
+            dates = [dates]
+        elif not isinstance(dates, list):
+            raise ValueError("dates参数必须是字符串或列表")
+
+        news_data = []
+        for idx, date in enumerate(dates):
+            query = "{} {}".format(date, incidental)
+            freshness = "{}..{}".format(date, date)
+            data = self.get_news_by_date(query, freshness, day_count)
+            news_data.extend(data)
+            print(f"第{idx+1}次调用，日期：{date}， freshness：{freshness}，获取的新闻条数：{len(data)}")
+
+        print(f"所有日期调用完成，共获取新闻条数：{len(news_data)}")
         return sorted(news_data, key=lambda x: x['date'])

@@ -65,8 +65,12 @@ def main():
         from spi.bochaai import BoChaAiApi
 
         news_api = BoChaAiApi()
-        news_data = news_api.get_news(["2022-05", "2022-06"], "的中文新闻", 5)
+        # news_data = news_api.get_news(["2022-05", "2022-06"], "的中文新闻", 5)
+        news_data = news_api.get_news_by_dates(["2022-05-01"], "的中文新闻", 5)
 
+    if len(news_data) == 0:
+        print("没有找到新闻，不生成pdf")
+        return
     # print(news_data)
     # return
     print("开始生成pdf")
